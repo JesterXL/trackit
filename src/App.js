@@ -7,10 +7,14 @@ import { createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import createHistory from 'history/createBrowserHistory'
 import { Route } from 'react-router'
+import { Redirect } from 'react-router-dom'
 import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-router-redux'
-import reducers from './reducers'
+import {main} from './reducers'
 // import Home from './Home'
 import { composeWithDevTools } from 'redux-devtools-extension';
+import thunkMiddleware from 'redux-thunk'
+import Login from './Login';
+import { connect } from 'react-redux';
 
 const Home = () => (
   <div>
@@ -33,12 +37,34 @@ const history = createHistory()
 const middleware = routerMiddleware(history)
 const store = createStore(
   combineReducers({
-    reducers,
+    main,
     router: routerReducer
   }),
-  composeWithDevTools(applyMiddleware(middleware))
+  composeWithDevTools(applyMiddleware(middleware, thunkMiddleware))
 )
 
+const mapStateToProps = state => state.main;
+const mapDispatchToProps = dispatch => ({});
+const PrivateRouteComponent = ({ component: Component, ...rest }) =>
+{
+  const {login} = rest;
+  return (
+  <Route {...rest} render={props => (
+    login.isLoggedIn ? (
+      <Component {...props}/>
+    ) : (
+      <Redirect to={{
+        pathname: '/login',
+        state: { from: props.location }
+      }}/>
+    )
+  )}/>
+)};
+
+const PrivateRoute = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PrivateRouteComponent);
 
 class App extends Component {
   render() {
@@ -49,9 +75,10 @@ class App extends Component {
             <div width="100%" height="100%">
               <NavBar />
                 <div>
-                  <Route exact path="/" component={Home}/>
-                  <Route path="/photo" component={Photo}/>
-                  <Route path="/settings" component={Settings}/>
+                  <PrivateRoute exact path="/" component={Home}/>
+                  <PrivateRoute path="/photo" component={Photo}/>
+                  <PrivateRoute path="/settings" component={Settings}/>
+                  <Route path="/login" component={Login}/>
                 </div>
               <BottomNavConnected/>
             </div>

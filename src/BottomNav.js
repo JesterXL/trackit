@@ -34,7 +34,7 @@ const mapStateToProps = state => {
     case '/settings':
       return {bottomNavSelectedIndex: 2};
     default:
-      return {bottomNavSelectedIndex: 0};
+      return {bottomNavSelectedIndex: -1};
   }
 }
 
