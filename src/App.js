@@ -15,6 +15,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import thunkMiddleware from 'redux-thunk'
 import Login from './Login';
 import { connect } from 'react-redux';
+import UploadImageForm from './UploadImageForm';
 
 const Home = () => (
   <div>
@@ -79,6 +80,7 @@ class App extends Component {
                   <PrivateRoute path="/photo" component={Photo}/>
                   <PrivateRoute path="/settings" component={Settings}/>
                   <Route path="/login" component={Login}/>
+                  <Route path="/upload" component={UploadImageForm}/>
                 </div>
               <BottomNavConnected/>
             </div>
